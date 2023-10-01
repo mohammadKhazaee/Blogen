@@ -1,0 +1,110 @@
+<%- include('../../includes/head.ejs') %>
+
+<!-- NAVBAR -->
+<%- include('../../includes/navbar.ejs', {path: path, isLoggedIn: isLoggedIn, csrfToken: csrfToken,
+requestCount: requestCount, adminName: adminName}) %>
+
+	<!-- HEADING -->
+	<header
+		class="text-white py-1"
+		style="background-image: linear-gradient(to right bottom, #ff283d, #ff5365);"
+	>
+		<div class="container">
+			<h1><i class="fa fa-wpforms"></i> Administration Requests</h1>
+		</div>
+	</header>
+	<!-- FEEDBACK -->
+	<div class="collapse <%= successMessage||errorMessage?'show':'' %>" id="feedbackCollapse">
+		<div class="card card-body fb <%= successMessage?'fb--success':'fb--error' %>">
+			<button class="close"><span>&times;</span></button>
+			<p class="fb__message m-0 p-0"><%= successMessage || errorMessage %></p>
+		</div>
+	</div>
+
+	<!-- ADD SECTION -->
+	<section class="bg-light py-4">
+		<div class="container">
+			<div class="row justify-content-end">
+				<div class="col-md-6">
+					<form action="/requests" method="GET">
+						<div class="input-group">
+							<input
+								type="text"
+								class="form-control"
+								placeholder="Search in names"
+								name="search"
+								id="search"
+							/>
+							<span class="input-group-btn">
+								<input type="submit" value="Search" class="btn btn-danger" />
+							</span>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- TABLE & STATE SECTION -->
+	<section class="py-4">
+		<div class="container">
+			<div class="row">
+				<!-- TABLE -->
+				<div class="col">
+					<div class="card">
+						<div class="card-header">
+							<h4>Latest Posts</h4>
+						</div>
+						<table class="table table-striped">
+							<thead class="thead-inverse">
+								<tr>
+									<th>#</th>
+									<th>Volunteer</th>
+									<th>Date Sent</th>
+									<th>Description</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<% requests.forEach((request, index) => { %>
+								<tr>
+									<td scope="row"><%= index+1 %></td>
+									<td><%= request.name %></td>
+									<td><%= request.createdAt %></td>
+									<td><%= request.description %></td>
+									<td>
+										<a
+											href="/requests/details/<%= request._id %>"
+											class="btn btn-secondary btn-block"
+										>
+											<i class="fa fa-angle-double-right"></i> Details
+										</a>
+										<a href="/requests/accept/<%= request._id %>" class="btn btn-success btn-block"
+											><i class="fa fa-check"></i> Accept</a
+										>
+										<a href="/requests/reject/<%= request._id %>" class="btn btn-danger btn-block"
+											><i class="fa fa-times"></i> Reject</a
+										>
+									</td>
+								</tr>
+								<% }) %>
+							</tbody>
+						</table>
+
+						<!-- PAGINATION -->
+						<% if (requests.length > 0) { %>
+							<%- include('../../includes/pagination.ejs', { beforePreviousPage: beforePreviousPage, hasBeforePreviousPage: hasBeforePreviousPage, previousPage: previousPage, hasPreviousPage: hasPreviousPage, currentPage: currentPage, nextPage: nextPage, hasNextPage: hasNextPage, afterNextPage: afterNextPage, hasAfterNextPage: hasAfterNextPage, lastPage: lastPage }) %>
+						<% } %>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+<!-- MAIN FOOTER -->
+<%- include('../../includes/footer.ejs') %>
+
+<!-- SCRIPTS AND END OF BODY -->
+<%- include('../../includes/end.ejs') %> 
+</body>
+</html>

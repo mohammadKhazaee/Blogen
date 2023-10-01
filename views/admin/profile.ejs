@@ -1,0 +1,183 @@
+<%- include('../includes/head.ejs') %>
+
+    <!-- NAVBAR -->
+    <%- include('../includes/navbar.ejs', {path: path, isLoggedIn: isLoggedIn, csrfToken: csrfToken, requestCount: requestCount, adminName: adminName}) %>
+
+    <!-- HEADING -->
+    <header class="bg-primary text-white py-1">
+        <div class="container">
+            <h1><i class="fa fa-user"></i> Edit Profile</h1>
+        </div>
+    </header>
+    <!-- FEEDBACK -->
+    <div class="collapse <%= successMessage||errorMessage?'show':'' %>" id="feedbackCollapse">
+        <div class="card card-body fb <%= successMessage?'fb--success':'fb--error' %>">
+            <button class="close"><span>&times;</span></button>
+            <p class="fb__message m-0 p-0"><%= successMessage || errorMessage %></p>
+        </div>
+    </div>
+
+    <!-- ADD SECTION -->
+    <section id="buttons-section" class="bg-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mr-auto">
+                    <a href="/" class="btn btn-light btn-block text-dark"><i class="fa fa-arrow-left"></i> Back To Dashboard</a>
+                </div>
+                <div class="col-md-3">
+                    <a class="btn btn-success btn-block text-white" data-toggle="modal" data-target="#changePasswordModal"><i class="fa fa-lock"></i> Change Password</a>
+                </div>
+                <div class="col-md-3">
+                    <a class="btn btn-danger btn-block text-white" data-toggle="modal" data-target="#deleteAccountModal"><i class="fa fa-times"></i> Delete Account</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TABLE & STATE SECTION -->
+    <section class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9 mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="header-title">Edit Profile</h3>
+                        </div>
+                        <div class="card-body">
+                            <form action="/profile/edit" method="POST" id="editProfileForm" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" class="form-control <%= isNameValid?'':'is-invalid' %>" id="name" name="name" value="<%= !isInfoWrong?admin.name:oldInput.name %>">
+                                    <% if (!isNameValid) { %>
+                                        <div class="invalid-feedback d-block">
+                                            <%= nameMessage %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="text" class="form-control <%= isEmailValid?'':'is-invalid' %>" id="email" name="email" value="<%= !isInfoWrong?admin.email:oldInput.email %>">
+                                    <% if (!isEmailValid) { %>
+                                        <div class="invalid-feedback d-block">
+                                            <%= emailMessage %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editor1">Bio</label>
+                                    <textarea name="editor1" id="editor1" class="form-control"><%= !isInfoWrong?(admin.bio?admin.bio:''):oldInput.bio %></textarea>
+                                    <% if (!isBioValid) { %>
+                                        <div class="invalid-feedback d-block">
+                                            <%= bioMessage %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <input type="submit" class="btn btn-primary float-right" value="Save Changes">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h3>Your Avatar</h3>
+                    <img src="<%= admin.avatarUrl?admin.avatarUrl:'/img/avatar.png' %>" class="img-fluid mb-3">
+                    <input type="file" name="image" id="image" class="d-none" form="editProfileForm">
+                    <label for="image" class="d-block"><a class="btn btn-primary btn-block text-white mb-2">Edit Image</a></label>
+                    <a href="/profile/delete-avatar" class="btn btn-danger btn-block text-white mb-3">Delete Image</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN FOOTER -->
+    <%- include('../includes/footer.ejs') %> 
+
+    
+    <!-- CHANGE PASSWORD MODAL -->
+    <div class="modal fade" id="changePasswordModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form action="/profile/change-password" method="POST" id="changePasswordForm">
+                        <div class="form-group">
+                            <label for="password">New Password</label>
+                            <input type="password" class="form-control <%= isPasswordValid?'':'is-invalid' %>" name="password" id="password">
+                            <% if (!isPasswordValid) { %>
+                                <div class="invalid-feedback d-block">
+                                    <%= passwordMessage %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" class="form-control <%= isConfirmPasswordValid?'':'is-invalid' %>" name="confirmPassword" id="confirmPassword">
+                            <% if (!isConfirmPasswordValid) { %>
+                                <div class="invalid-feedback d-block">
+                                    <%= confirmPasswordMessage %>
+                                </div>
+                                <% } %>
+                            </div>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" data-dismiss="modal" onclick="form_submit('changePasswordForm')">Update Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE ACCOUNT MODAL -->
+    <div class="modal fade" id="deleteAccountModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Delete account</h5>
+                    <button class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form action="/profile/delete-account" method="POST" id="deleteAccountForm">
+                        <div class="form-group">
+                            <label for="delPassword">Need your password to confirm</label>
+                            <input type="text" class="form-control <%= isDelPasswordValid?'':'is-invalid' %>" name="delPassword" id="delPassword">
+                            <% if (!isDelPasswordValid) { %>
+                                <div class="invalid-feedback d-block">
+                                    <%= delPasswordMessage %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-danger" data-dismiss="modal" onclick="form_submit('deleteAccountForm')">Delete Account</button>
+                </div>
+            </div>
+        </div>
+    
+    <!-- SCRIPTS AND END OF BODY -->
+    <%- include('../includes/end.ejs') %>
+    
+    <% if (!isPasswordValid || !isConfirmPasswordValid) { %>
+        <script type="text/javascript">
+            $(window).on('load', function(){
+                $('#changePasswordModal').modal('show')
+            })
+        </script>
+    <% } %>
+    <% if (!isDelPasswordValid) { %>
+        <script type="text/javascript">
+            $(window).on('load', function(){
+                $('#deleteAccountModal').modal('show')
+            })
+        </script>
+    <% } %>
+
+</body>
+</html>

@@ -1,0 +1,99 @@
+<%- include('../../includes/head.ejs') %>
+
+    <!-- NAVBAR -->
+    <%- include('../../includes/navbar.ejs', {path: path, isLoggedIn: isLoggedIn, csrfToken: csrfToken, requestCount: requestCount, adminName: adminName}) %>
+
+    <!-- HEADING -->
+    <header class="bg-primary text-white py-1">
+        <div class="container">
+            <h1><%= post.title %></h1>
+        </div>
+    </header>
+    <!-- FEEDBACK -->
+    <div class="collapse <%= successMessage||errorMessage?'show':'' %>" id="feedbackCollapse">
+        <div class="card card-body fb <%= successMessage?'fb--success':'fb--error' %>">
+            <button class="close"><span>&times;</span></button>
+            <p class="fb__message m-0 p-0"><%= successMessage || errorMessage %></p>
+        </div>
+    </div>
+
+    <!-- ADD SECTION -->
+    <section id="buttons-section" class="bg-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mr-auto">
+                    <a href="/" class="btn btn-light btn-block text-dark"><i class="fa fa-arrow-left"></i> Back To Dashboard</a>
+                </div>
+                <div class="col-md-3">
+                    <a class="btn btn-success btn-block text-white editPostBtn"><i class="fa fa-check"></i> Save Changes</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="/posts/delete/<%= post._id %>" class="btn btn-danger btn-block text-white"><i class="fa fa-times"></i> Delete Post</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EDIT POST SECTION -->
+    <section class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="header-title">Edit Post</h3>
+                        </div>
+                        <div class="card-body">
+                            <form action="/posts/edit/<%= post._id %>" method="POST" id="editPostForm" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="title">Title</label>
+                                    <input type="text" class="form-control <%= isTitleValid?'':'is-invalid' %>" name="title" id="title" value="<%= post.title %>">
+                                    <% if (!isTitleValid) { %>
+                                        <div class="invalid-feedback d-block">
+                                            <%= titleMessage %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="form-group">
+                                    <label for="category">Category</label>
+                                    <select class="form-control" name="category" id="category">
+                                        <option value="No change">No change</option>
+                                        <% categories.forEach(category => { %>
+                                            <option value="<%= category.title %>"><%= category.title %></option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="upload">Image Upload</label>
+                                    <input type="file" class="form-control-file <%= isImageValid?'':'is-invalid' %>" name="image" id="image">
+                                    <small class="form-text text-muted">Max Size 3mb</small>
+                                    <% if (!isImageValid) { %>
+                                        <div class="invalid-feedback d-block">
+                                            <%= imageMessage %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="form-group">
+                                    <label for="body">Body</label>
+                                    <textarea name="editor1" id="editor1" class="form-control <%= isBodyValid?'':'is-invalid' %>"><%= post.body %></textarea>
+                                    <% if (!isBodyValid) { %>
+                                        <div class="invalid-feedback d-block">
+                                            <%= bodyMessage %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN FOOTER -->
+    <%- include('../../includes/footer.ejs') %>
+    <!-- SCRIPTS AND END OF BODY -->
+    <%- include('../../includes/end.ejs') %> 
+</body>
+</html>

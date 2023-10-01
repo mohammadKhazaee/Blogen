@@ -1,0 +1,3 @@
+*.min.*
+head.ejs
+public

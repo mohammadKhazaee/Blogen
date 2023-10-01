@@ -1,0 +1,76 @@
+<%- include('../../includes/head.ejs') %>
+
+
+    <!-- NAVBAR -->
+    <%- include('../../includes/navbar.ejs', {path: path, isLoggedIn: isLoggedIn, csrfToken: csrfToken }) %>
+
+
+    <!-- HEADING -->
+    <header class="bg-primary text-white py-1">
+        <div class="container">
+            <h1><i class="fa fa-user"></i> Blogen Admin</h1>
+        </div>
+    </header>
+    <!-- FEEDBACK -->
+    <div class="collapse <%= successMessage||errorMessage?'show':'' %>" id="feedbackCollapse">
+        <div class="card card-body fb <%= successMessage?'fb--success':'fb--error' %>">
+            <button class="close"><span>&times;</span></button>
+            <p class="fb__message m-0 p-0"><%= successMessage || errorMessage %></p>
+        </div>
+    </div>
+
+    <!-- LOGIN SECTION -->
+    <section id="login-card" class="py-5 mb-1">
+        <div class="container">
+            <div class="row mb-1">
+                <div class="col-md-6 mx-auto mb-2">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4 class="card-title">Account Login</h3>
+                        </div>
+                        <div class="card-body">
+                            <form action="/auth/login" method="POST">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                <input type="email" class="form-control <%= isEmailValid?'':'is-invalid' %>" name="email" id="email" <% if(oldInput){ %> value="<%= oldInput.email %>" <% } %>>
+                                    <% if (!isEmailValid) { %>
+                                        <div class="invalid-feedback d-block">
+                                            <%= emailMessage %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control <%= isPasswordValid?'':'is-invalid' %>" name="password" id="password" <% if(oldInput){ %> value="<%= oldInput.password %>" <% } %>>
+                                    <% if (!isPasswordValid) { %>
+                                        <div class="invalid-feedback d-block">
+                                            <%= passwordMessage %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <input  class="btn btn-primary btn-block" type="submit" value="Login">
+                            </form>
+                            <div class="row mt-1">
+                                <div class="col-md-6">
+                                    <a href="/auth/signup" class="btn btn-light btn-block">Create Account</a>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="/auth/reset-password" class="btn btn-light btn-block">Forgot Password</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- MAIN FOOTER -->
+    <%- include('../../includes/footer.ejs') %>
+
+    <!-- SCRIPTS AND END OF BODY -->
+    <%- include('../../includes/end.ejs') %> 
+</body>
+</html>

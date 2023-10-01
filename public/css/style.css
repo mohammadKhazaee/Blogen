@@ -1,0 +1,18 @@
+.fb {
+  position: relative; }
+  .fb--success {
+    border: 2px solid #106b08;
+    background-color: #80ce78;
+    color: #106b08;
+    text-align: center; }
+  .fb--error {
+    border: 2px solid #c50f0f;
+    background-color: #f07070;
+    color: #c50f0f;
+    text-align: center; }
+  .fb > button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    opacity: 0.4;
+    padding-right: 2px; }

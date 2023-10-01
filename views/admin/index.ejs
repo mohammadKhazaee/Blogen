@@ -1,0 +1,255 @@
+<%- include('../includes/head.ejs') %>
+
+    <!-- NAVBAR -->
+    <%- include('../includes/navbar.ejs', {path: path, isLoggedIn: isLoggedIn, csrfToken: csrfToken, requestCount: requestCount, adminName: adminName}) %>
+
+    <!-- HEADING -->
+    <header class="bg-primary text-white py-1">
+        <div class="container">
+            <h1><i class="fa fa-cog"></i> Dashboard</h1>
+        </div>
+    </header>
+    <!-- FEEDBACK -->
+    <div class="collapse <%= successMessage||errorMessage?'show':'' %>" id="feedbackCollapse">
+        <div class="card card-body fb <%= successMessage?'fb--success':'fb--error' %>">
+            <button class="close"><span>&times;</span></button>
+            <p class="fb__message m-0 p-0"><%= successMessage || errorMessage %></p>
+        </div>
+    </div>
+
+    <!-- ADD SECTION -->
+    <section class="bg-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#addPostModal"><i class="fa fa-plus"></i> Add Post</button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-success btn-block" data-target="#addCategoryModal" data-toggle="modal"><i class="fa fa-plus"></i> Add Category</button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-warning btn-block" data-target="#addUserModal" data-toggle="modal"><i class="fa fa-plus"></i> Add User</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TABLE & STATE SECTION -->
+    <section class="py-4">
+        <div class="container">
+            <div class="row">
+
+                <!-- TABLE -->
+                <div class="col-md-9">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Latest Posts</h4>
+                        </div>
+                        <table class="table table-striped">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Date Posted</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% posts.forEach((post, index) => { %>
+                                    <tr>
+                                        <td scope="row"><%= index+1 %></td>
+                                        <td><%= post.title %></td>
+                                        <td><%= post.category %></td>
+                                        <td><%= post.createdAt %></td>
+                                        <td><a href="/posts/details/<%= post._id %>" class="btn btn-secondary"><i class="fa fa-angle-double-right"></i> Details</a></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- STATE -->
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white mb-3">
+                        <div class="card-body text-center">
+                            <div class="card-title"><h3>Posts</h3></div>
+                            <div class="card-text"><h4 class="display-4"><i class="fa fa-pencil"></i> <%= postCount %></h4></div>
+                            <a href="/posts" class="btn btn-outline-light btn-sm">View</a>
+                        </div>
+                    </div>
+                    <div class="card bg-success text-white mb-3">
+                        <div class="card-body text-center">
+                            <div class="card-title"><h3>Categories</h3></div>
+                            <div class="card-text"><h4 class="display-4"><i class="fa fa-folder-open-o"></i> <%= categories.length %></h4></div>
+                            <a href="/categories" class="btn btn-outline-light btn-sm">View</a>
+                        </div>
+                    </div>
+                    <div class="card bg-warning text-white mb-3">
+                        <div class="card-body text-center">
+                            <div class="card-title"><h3>Users</h3></div>
+                            <div class="card-text"><h4 class="display-4"><i class="fa fa-users"></i> <%= userCount %></h4></div>
+                            <a href="/users" class="btn btn-outline-light btn-sm">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN FOOTER -->
+    <%- include('../includes/footer.ejs') %>
+
+
+    <!-- POST MODAL -->
+    <div class="modal fade" id="addPostModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Add Post</h5>
+                    <button class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/posts/add" method="POST" id="addPostForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" class="form-control <%= !isTitleValid&&wrongInput==='Post'?'is-invalid':'' %>" <% if(wrongInput==='Post'){ %> value="<%= oldInput.title %>" <% } %> name="title">
+                            <% if (!isTitleValid&&wrongInput==='Post') { %>
+                                <div class="invalid-feedback d-block">
+                                    <%= titleMessage %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select class="form-control" name="category" id="category">
+                                <% categories.forEach(category => { %>
+                                    <option value="<%= category.title %>"><%= category.title %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="image">Image Upload</label>
+                            <input type="file" class="form-control-file" name="image" id="image">
+                            <small class="form-text text-muted">Max Size 3mb</small>
+                            <% if (!isImageValid&&wrongInput==='Post') { %>
+                                <div class="invalid-feedback d-block">
+                                    <%= imageMessage %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="form-group">
+                            <label for="editor1">Body</label>
+                            <textarea name="editor1" id="editor1" class="form-control"><% if(wrongInput==='Post'){ %><%= oldInput.body %><% } %></textarea>
+                            <% if (!isBodyValid&&wrongInput==='Post') { %>
+                                <div class="invalid-feedback d-block">
+                                    <%= bodyMessage %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary addPostBtn" data-dismiss="modal">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY MODAL -->
+    <div class="modal fade" id="addCategoryModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Add Category</h5>
+                    <button class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/categories/add" method="POST" id="addCategoryForm">
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" class="form-control <%= !isTitleValid&&wrongInput==='Category'?'is-invalid':'' %>" <% if(wrongInput==='Category'){ %> value="<%= oldInput.title %>" <% } %> name="title" id="title">
+                            <% if (!isTitleValid&&wrongInput==='Category') { %>
+                                <div class="invalid-feedback d-block">
+                                    <%= titleMessage %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-success addCategoryBtn" data-dismiss="modal">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER MODAL -->
+    <input type="hidden" name="wrongInput" value="<%= wrongInput %>">
+    <div class="modal fade" id="addUserModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title" class="modal-title">Add User</h5 class="modal-title">
+                        <button class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+                <div class="modal-body">
+                    <form action="/users/add" method="POST" id="addUserForm">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control <%= !isNameValid&&wrongInput==='User'?'is-invalid':'' %>" <% if(wrongInput==='User'){ %> value="<%= oldInput.name %>" <% } %> name="name" id="name">
+                            <% if (!isNameValid&&wrongInput==='User') { %>
+                                <div class="invalid-feedback d-block">
+                                    <%= nameMessage %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control <%= !isEmailValid&&wrongInput==='User'?'is-invalid':'' %>" <% if(wrongInput==='User'){ %> value="<%= oldInput.email %>" <% } %> name="email" id="email">
+                            <% if (!isEmailValid&&wrongInput==='User') { %>
+                                <div class="invalid-feedback d-block">
+                                    <%= emailMessage %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control <%= !isPasswordValid&&wrongInput==='User'?'is-invalid':'' %>" <% if(wrongInput==='User'){ %> value="<%= oldInput.password %>" <% } %> name="password" id="password">
+                            <% if (!isPasswordValid&&wrongInput==='User') { %>
+                                <div class="invalid-feedback d-block">
+                                    <%= passwordMessage %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" class="form-control <%= !isConfirmPasswordValid&&wrongInput==='User'?'is-invalid':'' %>" <% if(wrongInput==='User'){ %> value="<%= oldInput.confirmPassword %>" <% } %> name="confirmPassword" id="confirmPassword">
+                            <% if (!isConfirmPasswordValid&&wrongInput==='User') { %>
+                                <div class="invalid-feedback d-block">
+                                    <%= confirmPasswordMessage %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-warning addUserBtn" data-dismiss="modal">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- SCRIPTS -->
+    <%- include('../includes/end.ejs') %> 
+
+</body>
+</html>

@@ -1,0 +1,128 @@
+<%- include('../includes/head.ejs') %>
+
+<!-- NAVBAR -->
+<%- include('../includes/navbar.ejs', {path: path, isLoggedIn: isLoggedIn, csrfToken: csrfToken,
+requestCount: requestCount, adminName: adminName}) %>
+
+<!-- HEADING -->
+<header class="bg-primary text-white py-1">
+	<div class="container">
+		<h1><i class="fa fa-gear"></i> Settings</h1>
+	</div>
+</header>
+<!-- FEEDBACK -->
+<div class="collapse <%= successMessage||errorMessage?'show':'' %>" id="feedbackCollapse">
+	<div class="card card-body fb <%= successMessage?'fb--success':'fb--error' %>">
+		<button class="close"><span>&times;</span></button>
+		<p class="fb__message m-0 p-0"><%= successMessage || errorMessage %></p>
+	</div>
+</div>
+
+<!-- ADD SECTION -->
+<section id="buttons-section" class="bg-light py-4">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-3 mr-auto">
+				<a href="/" class="btn btn-light btn-block text-dark" style="font-size: 0.9rem;"
+					><i class="fa fa-arrow-left"></i> Back To Dashboard</a
+				>
+			</div>
+			<div class="col-md-3">
+				<a href="#" class="btn btn-success btn-block text-white" style="font-size: 0.9rem;"
+					><i class="fa fa-check"></i> Save Changes</a
+				>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- TABLE & STATE SECTION -->
+<section class="py-4">
+	<div class="container">
+		<div class="row">
+			<div class="col mb-3">
+				<div class="card">
+					<div class="card-header">
+						<h4 class="modal-title">Edit Settings</h4>
+					</div>
+					<div class="card-body">
+						<form>
+							<fieldset class="form-group">
+								<legend>Allow User Registeration</legend>
+								<div class="form-check">
+									<label class="form-check-label">
+										<input type="radio" class="form-check-input" value="yes" checked />
+										Yes
+									</label>
+								</div>
+								<div class="form-check">
+									<label class="form-check-label">
+										<input type="radio" class="form-check-input" value="no" />
+										No
+									</label>
+								</div>
+							</fieldset>
+							<fieldset class="form-group">
+								<legend>Homepage Format</legend>
+								<div class="form-check">
+									<label class="form-check-label">
+										<input type="radio" class="form-check-input" value="posts" checked />
+										Post Index
+									</label>
+								</div>
+								<div class="form-check">
+									<label class="form-check-label">
+										<input type="radio" class="form-check-input" value="page" />
+										Single Page
+									</label>
+								</div>
+							</fieldset>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- MAIN FOOTER -->
+<%- include('../includes/footer.ejs') %>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal fade" id="changePasswordModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-primary text-white">
+				<h5 class="modal-title">Change Password</h5>
+				<button class="close text-white" data-dismiss="modal">
+					&times;
+				</button>
+			</div>
+			<div class="modal-body">
+				<form>
+					<div class="form-group">
+						<label for="password">Password</label>
+						<input type="text" class="form-control" />
+					</div>
+					<div class="form-group">
+						<label for="confirm password">Confirm Password</label>
+						<input type="text" class="form-control" />
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary" data-dismiss="modal">
+					Close
+				</button>
+				<button class="btn btn-primary" data-dismiss="modal">
+					Update Password
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- SCRIPTS AND END OF BODY -->
+    <%- include('../includes/end.ejs') %> 
+</body>
+</html>
