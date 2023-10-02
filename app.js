@@ -12,6 +12,7 @@ const { v4: uuidv4 } = require("uuid");
 const flash = require("connect-flash");
 const helmet = require("helmet");
 const compression = require("compression");
+const bcrypt = require("bcryptjs");
 
 const Admin = require("./models/admin");
 const AdminRequest = require("./models/adminRequest");
@@ -91,10 +92,25 @@ app.use((req, res, next) => {
 	res.locals.prevAddress = req.headers.referer;
 	next();
 });
+
+// Creating test admin if there is none in db
+app.use(async (req, res, next) => {
+	const admin = await Admin.findOne({ email: "test@test.com" });
+	if (!admin) {
+		const hashedpass = bcrypt.hashSync("12345678", 12);
+		const newAdmin = new Admin({
+			name: "test admin",
+			email: "test@test.com",
+			password: hashedpass,
+		});
+		await newAdmin.save();
+	}
+	return next();
+});
+
 // Chain user from previous request to current request with session
 app.use((req, res, next) => {
 	if (!req.session.admin) return next();
-
 	AdminRequest.countDocuments()
 		.then((requestCount) => {
 			res.locals.requestCount = requestCount;
