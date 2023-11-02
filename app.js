@@ -19,8 +19,9 @@ const AdminRequest = require("./models/adminRequest");
 
 const router = require("./routes/routes");
 
-const PORT = process.env.PORT;
-const DATABASE_URI = process.env.DATABASE_URI;
+const PORT = process.env.PORT || 3000;
+const DATABASE_URI =
+	process.env.DATABASE_URI || "mongodb://localhost:27017/blogen";
 
 const app = express();
 // The store that sessions will be store there
@@ -73,7 +74,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 //  Initialize session for users authentication
 app.use(
 	session({
-		secret: process.env.MONGO_CONNECT_SECRET,
+		secret: process.env.MONGO_CONNECT_SECRET || "some secret",
 		resave: false,
 		saveUninitialized: false,
 		store: store,
@@ -135,6 +136,6 @@ mongoose
 		useFindAndModify: false,
 	})
 	.then((result) => {
-		app.listen(PORT || 3000);
+		app.listen(PORT);
 	})
 	.catch((err) => console.log(err));
